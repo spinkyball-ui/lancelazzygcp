@@ -1,0 +1,38 @@
+worker_processes auto;
+
+events {}
+
+http {
+    # Optional: set headers for Cloud Run
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+
+    server {
+        listen 8080;
+
+        # Route /vless to local Xray instance
+        location /vless {
+            proxy_pass http://74.208.119.202/vless;  # Xray WS inbound port
+             proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Host $host;
+        }
+
+        # Route /vmess to another local port
+        location /vmess {
+            proxy_pass http://74.208.119.202/vmess;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+        }
+
+        # Route all other paths to Cloud Run backend
+        location / {
+            proxy_pass http://74.208.119.202;
+        }
+
+    }
+}
