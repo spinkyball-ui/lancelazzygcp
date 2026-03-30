@@ -1,4 +1,8 @@
 DOCKER:VPS
+worker_processes auto;
+
+events {}
+
 http {
     # Optional: set headers for Cloud Run
     proxy_set_header Host $host;
