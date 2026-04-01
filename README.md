@@ -1,4 +1,3 @@
- DOCKER:VPS
 worker_processes auto;
 
 events {}
